@@ -55,6 +55,32 @@ QVariant Xe::PlaylistModel::data(const QModelIndex &index, int role) const {
         return QVariant();
 }
 
+Xe::DisplayWidget::DisplayWidget(QWidget *parent)
+    : QWidget(parent){
+
+    setMinimumSize(320,240);
+    layout = new QVBoxLayout();
+    setLayout(layout);
+
+    listView = new QListView(this);
+    listView->setModel(model);
+    listView->setSelectionMode(QListView::SingleSelection);
+    listView->setEditTriggers(QListView::NoEditTriggers);
+    listView->setAlternatingRowColors(true);
+
+    layout->addWidget(listView);
+}
+
+void Xe::DisplayWidget::setPlaylistModel(Xe::PlaylistModel *_model){
+    model = _model;
+}
+
+Xe::ControlWidget::ControlWidget(QMediaPlayer *_player, QWidget *parent)
+    : QWidget(parent), mediaPlayer(_player){
+
+
+}
+
 
 Xe::MainWidget::MainWidget(QWidget *parent)
     : QWidget(parent)
