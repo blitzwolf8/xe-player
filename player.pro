@@ -13,6 +13,7 @@ SOURCES += \
     xewidget.cc
 
 HEADERS += \
+    model.h \
     xewidget.h
 
 LIBS += -ltag
