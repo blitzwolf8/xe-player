@@ -1,2 +1,10 @@
-<!DOCTYPE RCC>
-<RCC version="1.0"/>
+<RCC>
+    <qresource prefix="/icons">
+        <file>res/icons/back.png</file>
+        <file>res/icons/next.png</file>
+        <file>res/icons/pause.png</file>
+        <file>res/icons/play.png</file>
+        <file>res/icons/playlist.png</file>
+        <file>res/icons/stop.png</file>
+    </qresource>
+</RCC>
