@@ -1,4 +1,4 @@
-#include "xewidget.h"
+#include "mainwidget.h"
 #include "model.h"
 
 
@@ -43,19 +43,25 @@ QVariant Xe::PlaylistModel::data(const QModelIndex &index, int role) const {
         return QVariant();
     if(index.row() >= audioItems.size())
         return QVariant();
-    if(role == Qt::DisplayRole)
+    if(role == Xe::Roles::TitleRole)
         return audioItems.at(index.row()).title();
+    if(role == Xe::Roles::AlbumRole)
+        return audioItems.at(index.row()).album();
+    if(role == Xe::Roles::ArtistRole)
+        return audioItems.at(index.row()).artist();
+    if(role == Xe::Roles::FileRole)
+        return audioItems.at(index.row()).filename();
     else
         return QVariant();
 }
 
 
-XeWidget::XeWidget(QWidget *parent)
+Xe::MainWidget::MainWidget(QWidget *parent)
     : QWidget(parent)
 {
 }
 
-XeWidget::~XeWidget()
+Xe::MainWidget::~MainWidget()
 {
 }
 

@@ -9,6 +9,11 @@
 
 namespace  Xe{
 
+enum Roles {
+    TitleRole = Qt::UserRole,
+    AlbumRole, ArtistRole, GenreRole, FileRole
+};
+
 class AudioItem : public QObject {
     Q_OBJECT
 public:

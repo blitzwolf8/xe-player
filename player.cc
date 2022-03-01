@@ -1,4 +1,4 @@
-#include "xewidget.h"
+#include "mainwidget.h"
 
 #include <QApplication>
 
