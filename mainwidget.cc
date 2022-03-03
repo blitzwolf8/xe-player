@@ -142,11 +142,12 @@ Xe::ControlWidget::ControlWidget(QMediaPlayer *_player, Xe::PlaylistModel *_mode
     QObject::connect(slider, &QSlider::sliderMoved, mediaPlayer, &QMediaPlayer::setPosition);
     QObject::connect(mediaPlayer, &QMediaPlayer::positionChanged, slider, &QSlider::setValue);
     QObject::connect(mediaPlayer, &QMediaPlayer::durationChanged, slider, &QSlider::setMaximum);
+    QObject::connect(mediaPlayer, &QMediaPlayer::mediaStatusChanged, this, &ControlWidget::mediaStatus);
 
 }
 
 void Xe::ControlWidget::togglePlay() {
-    qDebug() << m_pos;
+
     if(mediaPlayer->playbackState() != QMediaPlayer::PlayingState){
         mediaPlayer->play();
         this->plpauseBtn->setIcon(QIcon(":/res/icons/pause.png"));
@@ -158,6 +159,7 @@ void Xe::ControlWidget::togglePlay() {
 }
 
 void Xe::ControlWidget::stopPlayer(){
+
     if(mediaPlayer->playbackState() != QMediaPlayer::StoppedState){
         mediaPlayer->stop();
         this->plpauseBtn->setIcon(QIcon(":/res/icons/play.png"));
@@ -189,6 +191,13 @@ void Xe::ControlWidget::previousTrack(){
     plpauseBtn->setIcon(QIcon(":/res/icons/pause.png"));
 }
 
+void Xe::ControlWidget::mediaStatus() {
+
+    if(mediaPlayer->mediaStatus() == QMediaPlayer::EndOfMedia && (mediaPlayer->loops() == 1)){
+        nextTrack();
+    }
+}
+
 
 Xe::ControlWidget::~ControlWidget(){}
 
@@ -201,7 +210,7 @@ Xe::MainWidget::MainWidget(QWidget *parent)
 
     _audioItems = new QList<Xe::AudioItem>;
 
-    auto _iter = QDirIterator(QDir::homePath().append("/Music/xy"),
+    auto _iter = QDirIterator(QDir::homePath().append("/Music"),
                               QStringList() << "*.mp3", QDir::Files, QDirIterator::Subdirectories);
     while(_iter.hasNext()){
         auto _src = _iter.next();

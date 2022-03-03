@@ -44,6 +44,7 @@ public slots:
     void stopPlayer();
     void nextTrack();
     void previousTrack();
+    void mediaStatus();
 
 private:
     QGridLayout *gridLayout;
