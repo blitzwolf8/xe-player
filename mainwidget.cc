@@ -1,13 +1,20 @@
 #include "mainwidget.h"
 #include "model.h"
 
+#include <QDir>
+#include <QDirIterator>
 
 
-Xe::AudioItem::AudioItem(QString &src, QObject *parent)
-    : QObject(parent), source(src) {
+
+Xe::AudioItem::AudioItem( QString &src)
+    : source(src) {
 
     auto str = src.toLocal8Bit().data();
-    ref = new TagLib::FileRef(str);
+    auto _filename = TagLib::FileName(str);
+
+    ref = new TagLib::FileRef(_filename);
+
+
 
 }
 
@@ -43,7 +50,7 @@ QVariant Xe::PlaylistModel::data(const QModelIndex &index, int role) const {
         return QVariant();
     if(index.row() >= audioItems.size())
         return QVariant();
-    if(role == Xe::Roles::TitleRole)
+    if(role == Xe::Roles::TitleRole || role == Qt::DisplayRole)
         return audioItems.at(index.row()).title();
     if(role == Xe::Roles::AlbumRole)
         return audioItems.at(index.row()).album();
@@ -55,8 +62,8 @@ QVariant Xe::PlaylistModel::data(const QModelIndex &index, int role) const {
         return QVariant();
 }
 
-Xe::DisplayWidget::DisplayWidget(QWidget *parent)
-    : QWidget(parent){
+Xe::DisplayWidget::DisplayWidget(Xe::PlaylistModel *_model, QWidget *parent)
+    : QWidget(parent), model(_model){
 
     setMinimumSize(320,240);
     layout = new QVBoxLayout();
@@ -75,16 +82,95 @@ void Xe::DisplayWidget::setPlaylistModel(Xe::PlaylistModel *_model){
     model = _model;
 }
 
+Xe::DisplayWidget::~DisplayWidget(){}
+
 Xe::ControlWidget::ControlWidget(QMediaPlayer *_player, QWidget *parent)
     : QWidget(parent), mediaPlayer(_player){
 
+    setMinimumSize(320, 60);
+
+    gridLayout = new QGridLayout();
+    mainLayout = new QVBoxLayout();
+    btnLayout = new QHBoxLayout();
+    btnLayout->setSpacing(0);
+
+    setLayout(mainLayout);
+
+    elpsdLbl = new QLabel("--:--");
+    durationLbl = new QLabel("--:--");
+
+    slider = new QSlider(Qt::Horizontal);
+    slider->setMinimum(0);
+    slider->setMaximum(mediaPlayer->duration()/1000);
+    slider->setSliderPosition(0);
+
+    auto playIc = QIcon(":/res/icons/play.png");
+    auto stopIc = QIcon(":/res/icons/stop.png");
+    auto nextIc = QIcon(":/res/icons/next.png");
+    auto prevIc = QIcon(":/res/icons/back.png");
+    auto pauseIc = QIcon(":/res/icons/pause.png");
+
+    plpauseBtn = new QPushButton();
+    plpauseBtn->setIcon(playIc);
+    stopBtn = new QPushButton();
+    stopBtn->setIcon(stopIc);
+    nextBtn = new QPushButton();
+    nextBtn->setIcon(nextIc);
+    prevBtn = new QPushButton();
+    prevBtn->setIcon(prevIc);
+
+    gridLayout->addWidget(elpsdLbl, 0,0);
+    gridLayout->addWidget(slider,0,1);
+    gridLayout->addWidget(durationLbl, 0,2);
+
+    btnLayout->setAlignment(Qt::AlignLeft);
+    btnLayout->addWidget(plpauseBtn);
+    btnLayout->addWidget(prevBtn);
+    btnLayout->addWidget(stopBtn);
+    btnLayout->addWidget(nextBtn);
+
+    mainLayout->addLayout(gridLayout);
+    mainLayout->addSpacerItem(new QSpacerItem(0,8));
+    mainLayout->addLayout(btnLayout);
+
 
 }
+
+Xe::ControlWidget::~ControlWidget(){}
 
 
 Xe::MainWidget::MainWidget(QWidget *parent)
     : QWidget(parent)
 {
+    layout = new QVBoxLayout();
+    this->setLayout(layout);
+
+    _audioItems = new QList<Xe::AudioItem>;
+
+    auto _iter = QDirIterator(QDir::homePath().append("/Music/xy"),
+                              QStringList() << "*.mp3", QDir::Files, QDirIterator::Subdirectories);
+    while(_iter.hasNext()){
+        auto _src = _iter.next();
+        Xe::AudioItem a_itm(_src);
+       _audioItems->push_back(a_itm);
+    }
+
+    model = new Xe::PlaylistModel(*_audioItems);
+    mediaPositon = 0;
+
+    auto _index = model->index(mediaPositon,0);
+
+
+    mediaPlayer = new QMediaPlayer();
+    mediaPlayer->setSource(_index.data(Xe::Roles::FileRole).toUrl());
+
+    displayWidget = new Xe::DisplayWidget(model, this);
+    displayWidget->setPlaylistModel(model);
+    ctrlWidget = new Xe::ControlWidget(mediaPlayer, this);
+
+    layout->addWidget(displayWidget);
+    layout->addWidget(ctrlWidget);
+
 }
 
 Xe::MainWidget::~MainWidget()
