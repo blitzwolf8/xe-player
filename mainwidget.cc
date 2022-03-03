@@ -84,8 +84,8 @@ void Xe::DisplayWidget::setPlaylistModel(Xe::PlaylistModel *_model){
 
 Xe::DisplayWidget::~DisplayWidget(){}
 
-Xe::ControlWidget::ControlWidget(QMediaPlayer *_player, QWidget *parent)
-    : QWidget(parent), mediaPlayer(_player){
+Xe::ControlWidget::ControlWidget(QMediaPlayer *_player, Xe::PlaylistModel *_model, QWidget *parent)
+    : QWidget(parent), mediaPlayer(_player), model(_model){
 
     setMinimumSize(320, 60);
 
@@ -96,6 +96,14 @@ Xe::ControlWidget::ControlWidget(QMediaPlayer *_player, QWidget *parent)
 
     setLayout(mainLayout);
 
+    m_pos = 0;
+    auto _index = model->index(m_pos, 0);
+
+    auto _audioOutput = new QAudioOutput();
+    mediaPlayer = new QMediaPlayer();
+    mediaPlayer->setAudioOutput(_audioOutput);
+    mediaPlayer->setSource(_index.data(Xe::Roles::FileRole).toUrl());
+
     elpsdLbl = new QLabel("--:--");
     durationLbl = new QLabel("--:--");
 
@@ -104,19 +112,14 @@ Xe::ControlWidget::ControlWidget(QMediaPlayer *_player, QWidget *parent)
     slider->setMaximum(mediaPlayer->duration()/1000);
     slider->setSliderPosition(0);
 
-    auto playIc = QIcon(":/res/icons/play.png");
-    auto stopIc = QIcon(":/res/icons/stop.png");
-    auto nextIc = QIcon(":/res/icons/next.png");
-    auto prevIc = QIcon(":/res/icons/back.png");
-
     plpauseBtn = new QPushButton();
-    plpauseBtn->setIcon(playIc);
+    plpauseBtn->setIcon(QIcon(":/res/icons/play.png"));
     stopBtn = new QPushButton();
-    stopBtn->setIcon(stopIc);
+    stopBtn->setIcon(QIcon(":/res/icons/stop.png"));
     nextBtn = new QPushButton();
-    nextBtn->setIcon(nextIc);
+    nextBtn->setIcon(QIcon(":/res/icons/next.png"));
     prevBtn = new QPushButton();
-    prevBtn->setIcon(prevIc);
+    prevBtn->setIcon(QIcon(":/res/icons/back.png"));
 
     gridLayout->addWidget(elpsdLbl, 0,0);
     gridLayout->addWidget(slider,0,1);
@@ -134,6 +137,8 @@ Xe::ControlWidget::ControlWidget(QMediaPlayer *_player, QWidget *parent)
 
     QObject::connect(plpauseBtn, &QPushButton::clicked, this, &ControlWidget::togglePlay);
     QObject::connect(stopBtn, &QPushButton::clicked, this, &ControlWidget::stopPlayer);
+    QObject::connect(nextBtn, &QPushButton::clicked, this, &ControlWidget::nextTrack);
+    QObject::connect(prevBtn, &QPushButton::clicked, this, &ControlWidget::previousTrack);
     QObject::connect(slider, &QSlider::sliderMoved, mediaPlayer, &QMediaPlayer::setPosition);
     QObject::connect(mediaPlayer, &QMediaPlayer::positionChanged, slider, &QSlider::setValue);
     QObject::connect(mediaPlayer, &QMediaPlayer::durationChanged, slider, &QSlider::setMaximum);
@@ -141,16 +146,14 @@ Xe::ControlWidget::ControlWidget(QMediaPlayer *_player, QWidget *parent)
 }
 
 void Xe::ControlWidget::togglePlay() {
-
-    auto pauseIc = QIcon(":/res/icons/pause.png");
-    auto playIc = QIcon(":/res/icons/play.png");
+    qDebug() << m_pos;
     if(mediaPlayer->playbackState() != QMediaPlayer::PlayingState){
         mediaPlayer->play();
-        this->plpauseBtn->setIcon(pauseIc);
+        this->plpauseBtn->setIcon(QIcon(":/res/icons/pause.png"));
     }
     else{
         mediaPlayer->pause();
-        this->plpauseBtn->setIcon(playIc);
+        this->plpauseBtn->setIcon(QIcon(":/res/icons/play.png"));
     }
 }
 
@@ -160,6 +163,32 @@ void Xe::ControlWidget::stopPlayer(){
         this->plpauseBtn->setIcon(QIcon(":/res/icons/play.png"));
     }
 }
+
+void Xe::ControlWidget::nextTrack(){
+
+    if(m_pos == (model->rowCount(QModelIndex()) - 1))
+        m_pos = 0;
+    else{m_pos += 1;}
+
+    auto _index = model->index(m_pos,0);
+    mediaPlayer->setSource(model->data(_index, Xe::Roles::FileRole).toUrl());
+    mediaPlayer->play();
+    plpauseBtn->setIcon(QIcon(":/res/icons/pause.png"));
+}
+
+void Xe::ControlWidget::previousTrack(){
+
+    m_pos -= 1;
+    if(m_pos < 0){
+        m_pos = (model->rowCount(QModelIndex()) -1);
+    }
+
+    auto _index = model->index(m_pos,0);
+    mediaPlayer->setSource(model->data(_index, Xe::Roles::FileRole).toUrl());
+    mediaPlayer->play();
+    plpauseBtn->setIcon(QIcon(":/res/icons/pause.png"));
+}
+
 
 Xe::ControlWidget::~ControlWidget(){}
 
@@ -180,19 +209,10 @@ Xe::MainWidget::MainWidget(QWidget *parent)
        _audioItems->push_back(a_itm);
     }
 
-    model = new Xe::PlaylistModel(*_audioItems);
-    mediaPositon = 0;
+    auto _model = new Xe::PlaylistModel(*_audioItems);
 
-    auto _index = model->index(mediaPositon,0);
-
-    auto _audioOutput = new QAudioOutput();
-    mediaPlayer = new QMediaPlayer();
-    mediaPlayer->setAudioOutput(_audioOutput);
-    mediaPlayer->setSource(_index.data(Xe::Roles::FileRole).toUrl());
-
-    displayWidget = new Xe::DisplayWidget(model, this);
-    displayWidget->setPlaylistModel(model);
-    ctrlWidget = new Xe::ControlWidget(mediaPlayer, this);
+    displayWidget = new Xe::DisplayWidget(_model, this);
+    ctrlWidget = new Xe::ControlWidget(mediaPlayer, _model, this);
 
     layout->addWidget(displayWidget);
     layout->addWidget(ctrlWidget);

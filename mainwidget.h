@@ -35,15 +35,15 @@ private:
 class ControlWidget : public QWidget {
     Q_OBJECT
 public:
-    ControlWidget(QMediaPlayer *_player, QWidget *parent=nullptr);
+    ControlWidget(QMediaPlayer *_player, PlaylistModel *_model, QWidget *parent=nullptr);
     ~ControlWidget();
     void setMediaPlayer(QMediaPlayer *_player);
 
 public slots:
     void togglePlay();
     void stopPlayer();
-    //void nextTrack();
-    //void previousTrack();
+    void nextTrack();
+    void previousTrack();
 
 private:
     QGridLayout *gridLayout;
@@ -57,7 +57,8 @@ private:
     QSlider *slider;
     QVBoxLayout *mainLayout;
     QMediaPlayer *mediaPlayer;
-
+    Xe::PlaylistModel *model;
+    qint64 m_pos;
 };
 
 
@@ -73,8 +74,6 @@ private:
     Xe::ControlWidget *ctrlWidget;
     Xe::DisplayWidget *displayWidget;
     QMediaPlayer *mediaPlayer;
-    int mediaPositon;
-    Xe::PlaylistModel *model;
     QList<Xe::AudioItem> *_audioItems;
 };
 
