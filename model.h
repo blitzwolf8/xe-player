@@ -7,6 +7,7 @@
 #include <QAbstractListModel>
 
 
+
 namespace  Xe{
 
 enum Roles {
@@ -14,11 +15,13 @@ enum Roles {
     AlbumRole, ArtistRole, GenreRole, FileRole
 };
 
-class AudioItem : public QObject {
-    Q_OBJECT
+class AudioItem {
+
 public:
-    explicit AudioItem(QString &src, QObject *parent=nullptr);
+    explicit AudioItem(QString &src);
     ~AudioItem();
+    //AudioItem(const AudioItem&){}
+
     QString album() const;
     QString artist() const;
     QString filename() const;
