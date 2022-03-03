@@ -18,10 +18,11 @@
 
 namespace Xe {
 
-class DisplayWidget : QWidget {
+class DisplayWidget : public QWidget {
     Q_OBJECT
 public:
-    DisplayWidget(QWidget *parent=nullptr);
+    DisplayWidget(PlaylistModel *_model ,QWidget *parent=nullptr);
+    ~DisplayWidget();
     void setPlaylistModel(Xe::PlaylistModel *_model);
 private:
     QListView *listView;
@@ -29,10 +30,11 @@ private:
     QVBoxLayout *layout;
 };
 
-class ControlWidget : QWidget {
+class ControlWidget : public QWidget {
     Q_OBJECT
 public:
     ControlWidget(QMediaPlayer *_player, QWidget *parent=nullptr);
+    ~ControlWidget();
     void setMediaPlayer(QMediaPlayer *_player);
 private:
     QGridLayout *gridLayout;
@@ -57,6 +59,15 @@ class MainWidget : public QWidget
 public:
     MainWidget(QWidget *parent = nullptr);
     ~MainWidget();
+
+private:
+    QVBoxLayout *layout;
+    Xe::ControlWidget *ctrlWidget;
+    Xe::DisplayWidget *displayWidget;
+    QMediaPlayer *mediaPlayer;
+    int mediaPositon;
+    Xe::PlaylistModel *model;
+    QList<Xe::AudioItem> *_audioItems;
 };
 
 
