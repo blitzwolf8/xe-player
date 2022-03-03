@@ -134,6 +134,10 @@ Xe::ControlWidget::ControlWidget(QMediaPlayer *_player, QWidget *parent)
 
     QObject::connect(plpauseBtn, &QPushButton::clicked, this, &ControlWidget::togglePlay);
     QObject::connect(stopBtn, &QPushButton::clicked, this, &ControlWidget::stopPlayer);
+    QObject::connect(slider, &QSlider::sliderMoved, mediaPlayer, &QMediaPlayer::setPosition);
+    QObject::connect(mediaPlayer, &QMediaPlayer::positionChanged, slider, &QSlider::setValue);
+    QObject::connect(mediaPlayer, &QMediaPlayer::durationChanged, slider, &QSlider::setMaximum);
+
 }
 
 void Xe::ControlWidget::togglePlay() {
