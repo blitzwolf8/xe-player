@@ -108,7 +108,6 @@ Xe::ControlWidget::ControlWidget(QMediaPlayer *_player, QWidget *parent)
     auto stopIc = QIcon(":/res/icons/stop.png");
     auto nextIc = QIcon(":/res/icons/next.png");
     auto prevIc = QIcon(":/res/icons/back.png");
-    auto pauseIc = QIcon(":/res/icons/pause.png");
 
     plpauseBtn = new QPushButton();
     plpauseBtn->setIcon(playIc);
@@ -133,7 +132,29 @@ Xe::ControlWidget::ControlWidget(QMediaPlayer *_player, QWidget *parent)
     mainLayout->addSpacerItem(new QSpacerItem(0,8));
     mainLayout->addLayout(btnLayout);
 
+    QObject::connect(plpauseBtn, &QPushButton::clicked, this, &ControlWidget::togglePlay);
+    QObject::connect(stopBtn, &QPushButton::clicked, this, &ControlWidget::stopPlayer);
+}
 
+void Xe::ControlWidget::togglePlay() {
+
+    auto pauseIc = QIcon(":/res/icons/pause.png");
+    auto playIc = QIcon(":/res/icons/play.png");
+    if(mediaPlayer->playbackState() != QMediaPlayer::PlayingState){
+        mediaPlayer->play();
+        this->plpauseBtn->setIcon(pauseIc);
+    }
+    else{
+        mediaPlayer->pause();
+        this->plpauseBtn->setIcon(playIc);
+    }
+}
+
+void Xe::ControlWidget::stopPlayer(){
+    if(mediaPlayer->playbackState() != QMediaPlayer::StoppedState){
+        mediaPlayer->stop();
+        this->plpauseBtn->setIcon(QIcon(":/res/icons/play.png"));
+    }
 }
 
 Xe::ControlWidget::~ControlWidget(){}
@@ -160,8 +181,9 @@ Xe::MainWidget::MainWidget(QWidget *parent)
 
     auto _index = model->index(mediaPositon,0);
 
-
+    auto _audioOutput = new QAudioOutput();
     mediaPlayer = new QMediaPlayer();
+    mediaPlayer->setAudioOutput(_audioOutput);
     mediaPlayer->setSource(_index.data(Xe::Roles::FileRole).toUrl());
 
     displayWidget = new Xe::DisplayWidget(model, this);
@@ -173,7 +195,47 @@ Xe::MainWidget::MainWidget(QWidget *parent)
 
 }
 
-Xe::MainWidget::~MainWidget()
-{
-}
+Xe::MainWidget::~MainWidget(){}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
