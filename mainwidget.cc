@@ -1,5 +1,6 @@
 #include "mainwidget.h"
 #include "model.h"
+#include "format.h"
 
 #include <QDir>
 #include <QDirIterator>
@@ -104,7 +105,7 @@ Xe::ControlWidget::ControlWidget(QMediaPlayer *_player, Xe::PlaylistModel *_mode
     mediaPlayer->setAudioOutput(_audioOutput);
     mediaPlayer->setSource(_index.data(Xe::Roles::FileRole).toUrl());
 
-    elpsdLbl = new QLabel("--:--");
+    elpsdLbl = new QLabel("00:00");
     durationLbl = new QLabel("--:--");
 
     slider = new QSlider(Qt::Horizontal);
@@ -143,6 +144,8 @@ Xe::ControlWidget::ControlWidget(QMediaPlayer *_player, Xe::PlaylistModel *_mode
     QObject::connect(mediaPlayer, &QMediaPlayer::positionChanged, slider, &QSlider::setValue);
     QObject::connect(mediaPlayer, &QMediaPlayer::durationChanged, slider, &QSlider::setMaximum);
     QObject::connect(mediaPlayer, &QMediaPlayer::mediaStatusChanged, this, &ControlWidget::mediaStatus);
+    QObject::connect(mediaPlayer, &QMediaPlayer::durationChanged, this, &ControlWidget::setDuration);
+    QObject::connect(mediaPlayer, &QMediaPlayer::positionChanged, this, &ControlWidget::trackPosition);
 
 }
 
@@ -196,6 +199,16 @@ void Xe::ControlWidget::mediaStatus() {
     if(mediaPlayer->mediaStatus() == QMediaPlayer::EndOfMedia && (mediaPlayer->loops() == 1)){
         nextTrack();
     }
+}
+
+void Xe::ControlWidget::setDuration(){
+    auto _duration = mediaPlayer->duration();
+    durationLbl->setText(formatTime(_duration));
+}
+
+void Xe::ControlWidget::trackPosition(){
+    auto pos = mediaPlayer->position();
+    elpsdLbl->setText(formatTime(pos));
 }
 
 
