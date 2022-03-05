@@ -33,7 +33,10 @@ QString Xe::AudioItem::filename() const {
 }
 
 QString Xe::AudioItem::title() const {
-    return QString(ref->tag()->title().toCString());
+    if(QString(ref->tag()->title().toCString()) == "")
+        return QFileInfo(source).fileName();
+    else
+        return QString(ref->tag()->title().toCString());
 }
 
 Xe::AudioItem::~AudioItem(){}
@@ -229,7 +232,7 @@ Xe::MainWidget::MainWidget(QWidget *parent)
 
     _audioItems = new QList<Xe::AudioItem>;
 
-    auto _iter = QDirIterator(QDir::homePath().append("/Music/xy"),
+    auto _iter = QDirIterator(QDir::homePath().append("/Music"),
                               QStringList() << "*.mp3", QDir::Files, QDirIterator::Subdirectories);
     while(_iter.hasNext()){
         auto _src = _iter.next();
