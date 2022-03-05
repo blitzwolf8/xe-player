@@ -120,15 +120,19 @@ Xe::ControlWidget::ControlWidget(QMediaPlayer *_player, Xe::PlaylistModel *_mode
     plpauseBtn->setIcon(QIcon(":/res/icons/play.png"));
     plpauseBtn->setIconSize({30,30});
     plpauseBtn->setStyleSheet("width: 32px; height:32px");
+    plpauseBtn->setToolTip("Play");
     stopBtn = new QPushButton();
     stopBtn->setIcon(QIcon(":/res/icons/stop.png"));
     stopBtn->setStyleSheet("width: 20px; height:20px");
+    stopBtn->setToolTip("Stop Playback");
     nextBtn = new QPushButton();
     nextBtn->setIcon(QIcon(":/res/icons/next.png"));
     nextBtn->setStyleSheet("width: 20px; height:20px");
+    nextBtn->setToolTip("Next media");
     prevBtn = new QPushButton();
     prevBtn->setIcon(QIcon(":/res/icons/back.png"));
     prevBtn->setStyleSheet("width: 20px; height:20px");
+    prevBtn->setToolTip("Previous media");
 
     gridLayout->addWidget(elpsdLbl, 0,0);
     gridLayout->addWidget(slider,0,1);
