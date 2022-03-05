@@ -69,7 +69,7 @@ QVariant Xe::PlaylistModel::data(const QModelIndex &index, int role) const {
 Xe::DisplayWidget::DisplayWidget(Xe::PlaylistModel *_model, QWidget *parent)
     : QWidget(parent), model(_model){
 
-    setMinimumSize(320,240);
+    setMinimumSize(640,280);
     layout = new QVBoxLayout();
     setLayout(layout);
 
@@ -91,7 +91,7 @@ Xe::DisplayWidget::~DisplayWidget(){}
 Xe::ControlWidget::ControlWidget(QMediaPlayer *_player, Xe::PlaylistModel *_model, QWidget *parent)
     : QWidget(parent), mediaPlayer(_player), model(_model){
 
-    setMinimumSize(320, 60);
+    setMinimumSize(640, 80);
 
     gridLayout = new QGridLayout();
     mainLayout = new QVBoxLayout();
