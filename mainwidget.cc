@@ -229,6 +229,7 @@ Xe::MainWidget::MainWidget(QWidget *parent)
 {
     layout = new QVBoxLayout();
     this->setLayout(layout);
+    layout->setContentsMargins(0,0,0,0);
 
     _audioItems = new QList<Xe::AudioItem>;
 
