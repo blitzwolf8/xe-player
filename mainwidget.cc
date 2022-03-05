@@ -115,12 +115,17 @@ Xe::ControlWidget::ControlWidget(QMediaPlayer *_player, Xe::PlaylistModel *_mode
 
     plpauseBtn = new QPushButton();
     plpauseBtn->setIcon(QIcon(":/res/icons/play.png"));
+    plpauseBtn->setIconSize({30,30});
+    plpauseBtn->setStyleSheet("width: 32px; height:32px");
     stopBtn = new QPushButton();
     stopBtn->setIcon(QIcon(":/res/icons/stop.png"));
+    stopBtn->setStyleSheet("width: 20px; height:20px");
     nextBtn = new QPushButton();
     nextBtn->setIcon(QIcon(":/res/icons/next.png"));
+    nextBtn->setStyleSheet("width: 20px; height:20px");
     prevBtn = new QPushButton();
     prevBtn->setIcon(QIcon(":/res/icons/back.png"));
+    prevBtn->setStyleSheet("width: 20px; height:20px");
 
     gridLayout->addWidget(elpsdLbl, 0,0);
     gridLayout->addWidget(slider,0,1);
@@ -128,6 +133,7 @@ Xe::ControlWidget::ControlWidget(QMediaPlayer *_player, Xe::PlaylistModel *_mode
 
     btnLayout->setAlignment(Qt::AlignLeft);
     btnLayout->addWidget(plpauseBtn);
+    btnLayout->addSpacing(16);
     btnLayout->addWidget(prevBtn);
     btnLayout->addWidget(stopBtn);
     btnLayout->addWidget(nextBtn);
@@ -223,12 +229,12 @@ Xe::MainWidget::MainWidget(QWidget *parent)
 
     _audioItems = new QList<Xe::AudioItem>;
 
-    auto _iter = QDirIterator(QDir::homePath().append("/Music"),
+    auto _iter = QDirIterator(QDir::homePath().append("/Music/xy"),
                               QStringList() << "*.mp3", QDir::Files, QDirIterator::Subdirectories);
     while(_iter.hasNext()){
         auto _src = _iter.next();
         Xe::AudioItem a_itm(_src);
-       _audioItems->push_back(a_itm);
+        _audioItems->push_back(a_itm);
     }
 
     auto _model = new Xe::PlaylistModel(*_audioItems);
