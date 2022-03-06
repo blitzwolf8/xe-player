@@ -134,6 +134,11 @@ Xe::ControlWidget::ControlWidget(QMediaPlayer *_player, Xe::PlaylistModel *_mode
     prevBtn->setStyleSheet("width: 20px; height:20px");
     prevBtn->setToolTip("Previous media");
 
+    titleLabel = new QLabel("Title");
+    titleLabel->setStyleSheet("font-size: 14px");
+    artistLabel = new QLabel("Artist");
+    artistLabel->setStyleSheet("font-size: 12px");
+
     gridLayout->addWidget(elpsdLbl, 0,0);
     gridLayout->addWidget(slider,0,1);
     gridLayout->addWidget(durationLbl, 0,2);
@@ -145,6 +150,8 @@ Xe::ControlWidget::ControlWidget(QMediaPlayer *_player, Xe::PlaylistModel *_mode
     btnLayout->addWidget(stopBtn);
     btnLayout->addWidget(nextBtn);
 
+    mainLayout->addWidget(titleLabel);
+    mainLayout->addWidget(artistLabel);
     mainLayout->addLayout(gridLayout);
     mainLayout->addSpacerItem(new QSpacerItem(0,8));
     mainLayout->addLayout(btnLayout);
@@ -211,6 +218,10 @@ void Xe::ControlWidget::mediaStatus() {
 
     if(mediaPlayer->mediaStatus() == QMediaPlayer::EndOfMedia && (mediaPlayer->loops() == 1)){
         nextTrack();
+    }
+    if(mediaPlayer->mediaStatus() == QMediaPlayer::LoadedMedia){
+        titleLabel->setText(model->index(m_pos, 0).data(Xe::Roles::TitleRole).toString());
+        artistLabel->setText(model->index(m_pos, 0).data(Xe::Roles::ArtistRole).toString());
     }
 }
 

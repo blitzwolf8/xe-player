@@ -62,6 +62,8 @@ private:
     QMediaPlayer *mediaPlayer;
     Xe::PlaylistModel *model;
     qint64 m_pos;
+    QLabel *titleLabel;
+    QLabel *artistLabel;
 };
 
 
