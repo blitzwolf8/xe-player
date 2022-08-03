@@ -1,13 +1,15 @@
+#include "xe.h"
 #include "mainwidget.h"
 
-#include <QApplication>
 #include <QCoreApplication>
+#include <QApplication>
 
-int main(int argc, char *argv[])
-{
-    QCoreApplication::setApplicationName("xe-player");
+
+int Xe::run(int argc, char* argv[]) {
+
+    QCoreApplication::setApplicationName("xe");
     QCoreApplication::setOrganizationName("xio");
-    QCoreApplication::setOrganizationDomain("xio.com");
+    QCoreApplication::setOrganizationDomain("xe.xio.org");
 
     QApplication app(argc, argv);
     Xe::MainWidget xe_widget;
