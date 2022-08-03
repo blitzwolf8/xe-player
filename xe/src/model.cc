@@ -34,6 +34,16 @@ QVariant Xe::PlaylistModel::data(const QModelIndex &index, int role) const {
     return QVariant();
 }
 
+QVariant Xe::PlaylistModel::headerData(int section, Qt::Orientation orientation, int role) const {
+  if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
+    if(section == 0)
+      return "Title";
+    if(section == 1)
+      return "Artist";
+  }
+  return QVariant();
+}
+
 QHash<int, QByteArray> Xe::PlaylistModel::roleNames() const {
   QHash<int, QByteArray> roles;
   return roles;
