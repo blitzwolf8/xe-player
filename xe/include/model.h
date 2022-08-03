@@ -4,9 +4,7 @@
 #include <taglib/fileref.h>
 #include <taglib/taglib.h>
 #include <QObject>
-#include <QAbstractListModel>
-
-
+#include <QAbstractTableModel>
 
 namespace  Xe{
 
@@ -34,13 +32,18 @@ private:
 };
 
 
-class PlaylistModel : public QAbstractListModel {
+class PlaylistModel : public QAbstractTableModel {
     Q_OBJECT
+    
 public:
     PlaylistModel(QList<AudioItem> &_audioItems, QAbstractListModel *parent=nullptr);
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     int rowCount(const QModelIndex &parent) const override;
+    int columnCount(const QModelIndex& index) const override;
+    QHash<int, QByteArray> roleNames() const override;
+
+
 private:
     QList<AudioItem> audioItems;
 };
