@@ -109,20 +109,20 @@ Xe::ControlWidget::ControlWidget(QMediaPlayer *_player,
   slider->setSliderPosition(0);
 
   plpauseBtn = new QPushButton();
-  plpauseBtn->setIcon(QIcon(":/res/icons/play.png"));
+  plpauseBtn->setIcon(QIcon(":/icons/play.png"));
   plpauseBtn->setIconSize({30, 30});
   plpauseBtn->setStyleSheet("width: 32px; height:32px");
   plpauseBtn->setToolTip("Play");
   stopBtn = new QPushButton();
-  stopBtn->setIcon(QIcon(":/res/icons/stop.png"));
+  stopBtn->setIcon(QIcon(":/icons/stop.png"));
   stopBtn->setStyleSheet("width: 20px; height:20px");
   stopBtn->setToolTip("Stop Playback");
   nextBtn = new QPushButton();
-  nextBtn->setIcon(QIcon(":/res/icons/next.png"));
+  nextBtn->setIcon(QIcon(":/icons/next.png"));
   nextBtn->setStyleSheet("width: 20px; height:20px");
   nextBtn->setToolTip("Next media");
   prevBtn = new QPushButton();
-  prevBtn->setIcon(QIcon(":/res/icons/back.png"));
+  prevBtn->setIcon(QIcon(":/icons/back.png"));
   prevBtn->setStyleSheet("width: 20px; height:20px");
   prevBtn->setToolTip("Previous media");
 
@@ -174,10 +174,10 @@ void Xe::ControlWidget::togglePlay() {
 
   if (mediaPlayer->playbackState() != QMediaPlayer::PlayingState) {
     mediaPlayer->play();
-    this->plpauseBtn->setIcon(QIcon(":/res/icons/pause.png"));
+    this->plpauseBtn->setIcon(QIcon(":/icons/pause.png"));
   } else {
     mediaPlayer->pause();
-    this->plpauseBtn->setIcon(QIcon(":/res/icons/play.png"));
+    this->plpauseBtn->setIcon(QIcon(":/icons/play.png"));
   }
 }
 
@@ -185,7 +185,7 @@ void Xe::ControlWidget::stopPlayer() {
 
   if (mediaPlayer->playbackState() != QMediaPlayer::StoppedState) {
     mediaPlayer->stop();
-    this->plpauseBtn->setIcon(QIcon(":/res/icons/play.png"));
+    this->plpauseBtn->setIcon(QIcon(":/icons/play.png"));
   }
 }
 
@@ -200,7 +200,7 @@ void Xe::ControlWidget::nextTrack() {
   auto _index = model->index(m_pos, 0);
   mediaPlayer->setSource(model->data(_index, Xe::Roles::FileRole).toUrl());
   mediaPlayer->play();
-  plpauseBtn->setIcon(QIcon(":/res/icons/pause.png"));
+  plpauseBtn->setIcon(QIcon(":/icons/pause.png"));
 }
 
 void Xe::ControlWidget::previousTrack() {
@@ -213,7 +213,7 @@ void Xe::ControlWidget::previousTrack() {
   auto _index = model->index(m_pos, 0);
   mediaPlayer->setSource(model->data(_index, Xe::Roles::FileRole).toUrl());
   mediaPlayer->play();
-  plpauseBtn->setIcon(QIcon(":/res/icons/pause.png"));
+  plpauseBtn->setIcon(QIcon(":/icons/pause.png"));
 }
 
 void Xe::ControlWidget::mediaStatus() {
