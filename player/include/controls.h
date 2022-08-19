@@ -14,18 +14,17 @@
 #include <QtMultimedia/QAudioOutput>
 #include <QtMultimedia/QMediaPlayer>
 
+#include "media.h"
 #include "model.h"
 
 namespace Xe {
 
 class PlaylistModel;
 
-class ControlWidget : public QWidget {
+class Controls : public QWidget {
   Q_OBJECT
 public:
-  ControlWidget(QMediaPlayer *_player, PlaylistModel *_model,
-                QWidget *parent = nullptr);
-  ~ControlWidget();
+  Controls(Media *media, QWidget *parent = nullptr);
   void setMediaPlayer(QMediaPlayer *_player);
 
 public slots:
@@ -33,7 +32,6 @@ public slots:
   void stopPlayer();
   void nextTrack();
   void previousTrack();
-  void mediaStatus();
   void setDuration();
   void trackPosition();
 
@@ -48,11 +46,11 @@ private:
   QPushButton *stopBtn;
   QSlider *slider;
   QVBoxLayout *mainLayout;
-  QMediaPlayer *mediaPlayer;
   Xe::PlaylistModel *model;
   qint64 m_pos;
   QLabel *titleLabel;
   QLabel *artistLabel;
+  Media *_media;
 };
 
 } // namespace Xe

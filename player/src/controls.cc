@@ -1,9 +1,10 @@
 #include "controls.h"
 #include "format.h"
 
-Xe::ControlWidget::ControlWidget(QMediaPlayer *_player,
-                                 Xe::PlaylistModel *_model, QWidget *parent)
-    : QWidget(parent), mediaPlayer(_player), model(_model) {
+#include <QAction>
+
+Xe::Controls::Controls(Media *media, QWidget *parent)
+    : QWidget(parent), _media(media) {
 
   setMinimumSize(640, 80);
 
@@ -14,13 +15,7 @@ Xe::ControlWidget::ControlWidget(QMediaPlayer *_player,
 
   setLayout(mainLayout);
 
-  m_pos = 0;
-  auto _index = model->index(m_pos, 0);
-
-  auto _audioOutput = new QAudioOutput();
-  mediaPlayer = new QMediaPlayer();
-  mediaPlayer->setAudioOutput(_audioOutput);
-  mediaPlayer->setSource(_index.data(Xe::Roles::FileRole).toUrl());
+  auto mediaPlayer = _media->player();
 
   elpsdLbl = new QLabel("00:00");
   durationLbl = new QLabel("--:--");
@@ -70,96 +65,67 @@ Xe::ControlWidget::ControlWidget(QMediaPlayer *_player,
   mainLayout->addSpacerItem(new QSpacerItem(0, 8));
   mainLayout->addLayout(btnLayout);
 
+  auto _open = new QAction();
+  addAction(_open);
+  _open->setShortcut(QKeySequence::Open);
+  QObject::connect(_open, &QAction::triggered, _media, &Media::openDirectory);
+
   QObject::connect(plpauseBtn, &QPushButton::clicked, this,
-                   &ControlWidget::togglePlay);
+                   &Controls::togglePlay);
   QObject::connect(stopBtn, &QPushButton::clicked, this,
-                   &ControlWidget::stopPlayer);
+                   &Controls::stopPlayer);
   QObject::connect(nextBtn, &QPushButton::clicked, this,
-                   &ControlWidget::nextTrack);
+                   &Controls::nextTrack);
   QObject::connect(prevBtn, &QPushButton::clicked, this,
-                   &ControlWidget::previousTrack);
+                   &Controls::previousTrack);
   QObject::connect(slider, &QSlider::sliderMoved, mediaPlayer,
                    &QMediaPlayer::setPosition);
   QObject::connect(mediaPlayer, &QMediaPlayer::positionChanged, slider,
                    &QSlider::setValue);
   QObject::connect(mediaPlayer, &QMediaPlayer::durationChanged, slider,
                    &QSlider::setMaximum);
-  QObject::connect(mediaPlayer, &QMediaPlayer::mediaStatusChanged, this,
-                   &ControlWidget::mediaStatus);
   QObject::connect(mediaPlayer, &QMediaPlayer::durationChanged, this,
-                   &ControlWidget::setDuration);
+                   &Controls::setDuration);
   QObject::connect(mediaPlayer, &QMediaPlayer::positionChanged, this,
-                   &ControlWidget::trackPosition);
+                   &Controls::trackPosition);
 }
 
-void Xe::ControlWidget::togglePlay() {
-
-  if (mediaPlayer->playbackState() != QMediaPlayer::PlayingState) {
-    mediaPlayer->play();
+void Xe::Controls::togglePlay() {
+  _media->tooglePlayback();
+  if (_media->state() != Media::MediaState::Paused) {
     this->plpauseBtn->setIcon(QIcon(":/icons/pause.png"));
   } else {
-    mediaPlayer->pause();
     this->plpauseBtn->setIcon(QIcon(":/icons/play.png"));
   }
 }
 
-void Xe::ControlWidget::stopPlayer() {
+void Xe::Controls::stopPlayer() {
 
-  if (mediaPlayer->playbackState() != QMediaPlayer::StoppedState) {
-    mediaPlayer->stop();
+  if (_media->state() != Media::MediaState::Stopped) {
+    _media->stopPlayback();
     this->plpauseBtn->setIcon(QIcon(":/icons/play.png"));
   }
 }
 
-void Xe::ControlWidget::nextTrack() {
-
-  if (m_pos == (model->rowCount(QModelIndex()) - 1))
-    m_pos = 0;
-  else {
-    m_pos += 1;
-  }
-
-  auto _index = model->index(m_pos, 0);
-  mediaPlayer->setSource(model->data(_index, Xe::Roles::FileRole).toUrl());
-  mediaPlayer->play();
-  plpauseBtn->setIcon(QIcon(":/icons/pause.png"));
+void Xe::Controls::nextTrack() {
+  _media->loadNext();
+  if (_media->state() == Media::MediaState::Playing)
+    plpauseBtn->setIcon(QIcon(":/icons/pause.png"));
 }
 
-void Xe::ControlWidget::previousTrack() {
+void Xe::Controls::previousTrack() {
 
-  m_pos -= 1;
-  if (m_pos < 0) {
-    m_pos = (model->rowCount(QModelIndex()) - 1);
-  }
-
-  auto _index = model->index(m_pos, 0);
-  mediaPlayer->setSource(model->data(_index, Xe::Roles::FileRole).toUrl());
-  mediaPlayer->play();
-  plpauseBtn->setIcon(QIcon(":/icons/pause.png"));
+  _media->loadPrevious();
+  if (_media->state() == Media::MediaState::Playing)
+    plpauseBtn->setIcon(QIcon(":/icons/pause.png"));
 }
 
-void Xe::ControlWidget::mediaStatus() {
-
-  if (mediaPlayer->mediaStatus() == QMediaPlayer::EndOfMedia &&
-      (mediaPlayer->loops() == 1)) {
-    nextTrack();
-  }
-  if (mediaPlayer->mediaStatus() == QMediaPlayer::LoadedMedia) {
-    titleLabel->setText(
-        model->index(m_pos, 0).data(Xe::Roles::TitleRole).toString());
-    artistLabel->setText(
-        model->index(m_pos, 0).data(Xe::Roles::ArtistRole).toString());
-  }
-}
-
-void Xe::ControlWidget::setDuration() {
-  auto _duration = mediaPlayer->duration();
+void Xe::Controls::setDuration() {
+  auto _duration = _media->duration();
   durationLbl->setText(formatTime(_duration));
 }
 
-void Xe::ControlWidget::trackPosition() {
-  auto pos = mediaPlayer->position();
+void Xe::Controls::trackPosition() {
+  auto pos = _media->position();
   elpsdLbl->setText(formatTime(pos));
 }
-
-Xe::ControlWidget::~ControlWidget() {}
