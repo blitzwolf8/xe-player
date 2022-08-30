@@ -23,6 +23,7 @@ public:
 
 signals:
   void directoryChanged(const QString&);
+  void mediaStateChanged(MediaState state);
 
 public slots:
   void loadMedia();
@@ -32,6 +33,7 @@ public slots:
   void stopPlayback();
   void tooglePlayback();
   void status();
+  void updateIndex(const QModelIndex&);
 
 private:
   QMediaPlayer *_player;

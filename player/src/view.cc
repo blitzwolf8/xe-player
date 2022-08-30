@@ -3,7 +3,6 @@
 #include <QAbstractItemView>
 #include <QHeaderView>
 
-
 Xe::View::View(PlaylistModel *_model, QWidget *parent)
     : QWidget(parent), model(_model) {
 
@@ -11,7 +10,8 @@ Xe::View::View(PlaylistModel *_model, QWidget *parent)
   layout = new QVBoxLayout();
   setLayout(layout);
 
-  setStyleSheet("QTableView {selection-background-color : #414141;qproperty-showGrid : false; }");
+  setStyleSheet("QTableView {selection-background-color : "
+                "#414141;qproperty-showGrid : false; }");
 
   _tableView = new QTableView(this);
   _tableView->setModel(model);
@@ -28,9 +28,8 @@ Xe::View::View(PlaylistModel *_model, QWidget *parent)
   _tableView->verticalHeader()->hide();
 
   layout->addWidget(_tableView);
-  QObject::connect(_tableView, &QTableView::doubleClicked, model, &PlaylistModel::setCurrentIndex);
+  QObject::connect(_tableView, &QTableView::doubleClicked, model,
+                   &PlaylistModel::setCurrentIndex);
 }
 
-void Xe::View::setPlaylistModel(Xe::PlaylistModel *_model) {
-  model = _model;
-}
+void Xe::View::setPlaylistModel(Xe::PlaylistModel *_model) { model = _model; }

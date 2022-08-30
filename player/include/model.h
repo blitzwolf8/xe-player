@@ -19,14 +19,19 @@ public:
   int columnCount(const QModelIndex &index) const override;
   QVariant headerData(int section, Qt::Orientation orientation,
                       int role = Qt::DisplayRole) const override;
+  QModelIndex currentIndex() const;
 
+signals:
+  void currentIndexChanged(const QModelIndex& index);
 
 public slots:
   void setCurrentIndex(const QModelIndex &);
-  void loadData(const QString&);
+  void loadData(const QString &);
+
 private:
   QStringList audioItems;
   QString folder;
+  QModelIndex _currentIndex;
 };
 
 } // end namespace Xe

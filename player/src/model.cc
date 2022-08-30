@@ -74,4 +74,11 @@ QVariant Xe::PlaylistModel::headerData(int section, Qt::Orientation orientation,
   return QVariant();
 }
 
-void Xe::PlaylistModel::setCurrentIndex(const QModelIndex &index) {}
+void Xe::PlaylistModel::setCurrentIndex(const QModelIndex &index) {
+  _currentIndex = index;
+  emit currentIndexChanged(_currentIndex);
+}
+
+QModelIndex Xe::PlaylistModel::currentIndex() const {
+  return _currentIndex;
+}

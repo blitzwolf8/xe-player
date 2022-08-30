@@ -12,8 +12,12 @@ Xe::Media::Media(QObject *parent) : QObject(parent), _index(0) {
   _player->setAudioOutput(aOut);
   loadMedia();
 
-  QObject::connect(_player, &QMediaPlayer::mediaStatusChanged, this, &Media::status);
-  QObject::connect(this, &Media::directoryChanged, _model, &PlaylistModel::loadData);
+  QObject::connect(_player, &QMediaPlayer::mediaStatusChanged, this,
+                   &Media::status);
+  QObject::connect(this, &Media::directoryChanged, _model,
+                   &PlaylistModel::loadData);
+  QObject::connect(_model, &PlaylistModel::currentIndexChanged, this,
+                   &Media::updateIndex);
 }
 
 QMediaPlayer *Xe::Media::player() const { return _player; }
@@ -25,32 +29,36 @@ void Xe::Media::loadMedia() {
   auto playing = _model->data(id, PlaylistModel::FileRole);
   _model->setCurrentIndex(id);
   _player->setSource(playing.toString());
+  setState(MediaState::Stopped);
 }
 
-void Xe::Media::setState(MediaState state) {_state = state;}
+void Xe::Media::setState(MediaState state) {
+  _state = state;
+  emit mediaStateChanged(_state);
+}
 
-Xe::MediaState Xe::Media::state() const {return _state;}
+Xe::MediaState Xe::Media::state() const { return _state; }
 
 void Xe::Media::openDirectory() {
   auto dir = QFileDialog::getExistingDirectory(nullptr, "Choose Music Folder");
-   if(!dir.isEmpty()){
-     emit directoryChanged(dir);
-   }
-   loadMedia();
+  if (!dir.isEmpty()) {
+    emit directoryChanged(dir);
+  }
+  loadMedia();
 }
 
 void Xe::Media::stopPlayback() {
-  if(_player->playbackState() != QMediaPlayer::StoppedState){
+  if (_player->playbackState() != QMediaPlayer::StoppedState) {
     _player->stop();
     setState(MediaState::Stopped);
   }
 }
 
 void Xe::Media::tooglePlayback() {
-  if(_player->playbackState() != QMediaPlayer::PlayingState){
+  if (_player->playbackState() != QMediaPlayer::PlayingState) {
     _player->play();
     setState(MediaState::Playing);
-  }else {
+  } else {
     _player->pause();
     setState(MediaState::Paused);
   }
@@ -92,10 +100,10 @@ void Xe::Media::status() {
       (_player->loops() == 1)) {
     loadNext();
   }
-  // if (_player->mediaStatus() == QMediaPlayer::LoadedMedia) {
-  //   titleLabel->setText(
-  //       model->index(m_pos, 0).data(PlaylistModel::TitleRole).toString());
-  //   artistLabel->setText(
-  //       model->index(m_pos, 0).data(PlaylistModel::ArtistRole).toString());
-  // }
+}
+
+void Xe::Media::updateIndex(const QModelIndex &index) {
+  _player->setSource(_model->data(index, PlaylistModel::FileRole).toUrl());
+  _player->play();
+  setState(MediaState::Playing);
 }
