@@ -16,6 +16,7 @@ Xe::Controls::Controls(Media *media, QWidget *parent)
   setLayout(mainLayout);
 
   auto mediaPlayer = _media->player();
+  model = _media->model();
 
   elpsdLbl = new QLabel("00:00");
   durationLbl = new QLabel("--:--");
@@ -42,11 +43,10 @@ Xe::Controls::Controls(Media *media, QWidget *parent)
   prevBtn->setIcon(QIcon(":/icons/back.png"));
   prevBtn->setStyleSheet("width: 20px; height:20px");
   prevBtn->setToolTip("Previous media");
-
-  titleLabel = new QLabel("Title");
-  titleLabel->setStyleSheet("font-size: 14px");
-  artistLabel = new QLabel("Artist");
-  artistLabel->setStyleSheet("font-size: 12px");
+  shuffleBtn = new QPushButton();
+  shuffleBtn->setIcon(QIcon(":/icons/stop.png"));
+  shuffleBtn->setToolTip("Shuffle playlist");
+  shuffleBtn->setCheckable(true);
 
   gridLayout->addWidget(elpsdLbl, 0, 0);
   gridLayout->addWidget(slider, 0, 1);
@@ -58,9 +58,8 @@ Xe::Controls::Controls(Media *media, QWidget *parent)
   btnLayout->addWidget(prevBtn);
   btnLayout->addWidget(stopBtn);
   btnLayout->addWidget(nextBtn);
-
-  mainLayout->addWidget(titleLabel);
-  mainLayout->addWidget(artistLabel);
+  btnLayout->addSpacing(16);
+  btnLayout->addWidget(shuffleBtn);
   mainLayout->addLayout(gridLayout);
   mainLayout->addSpacerItem(new QSpacerItem(0, 8));
   mainLayout->addLayout(btnLayout);
@@ -88,14 +87,27 @@ Xe::Controls::Controls(Media *media, QWidget *parent)
                    &Controls::setDuration);
   QObject::connect(mediaPlayer, &QMediaPlayer::positionChanged, this,
                    &Controls::trackPosition);
+  QObject::connect(shuffleBtn, &QPushButton::released , this, &Controls::toggleShuffle);
+  QObject::connect(_media, &Media::mediaStateChanged, [this] {
+    if (_media->state() == MediaState::Paused || _media->state() == MediaState::Stopped) {
+      plpauseBtn->setIcon(QIcon(":/icons/play.png"));
+    } else {
+      plpauseBtn->setIcon(QIcon(":/icons/pause.png"));
+    }
+  });
 }
 
 void Xe::Controls::togglePlay() {
   _media->tooglePlayback();
-  if (_media->state() != Media::MediaState::Paused) {
-    this->plpauseBtn->setIcon(QIcon(":/icons/pause.png"));
+}
+
+void Xe::Controls::toggleShuffle() {
+  if (shuffleBtn->isChecked() == false) {
+    shuffleBtn->setChecked(false);
+    // model->shuffle();
   } else {
-    this->plpauseBtn->setIcon(QIcon(":/icons/play.png"));
+    shuffleBtn->setChecked(true);
+    // model->shuffle();
   }
 }
 
