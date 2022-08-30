@@ -6,7 +6,7 @@
 int main(int argc, char *argv[]) {
   QCoreApplication::setApplicationName("XeAP");
   QCoreApplication::setOrganizationName("xio");
-  QCoreApplication::setOrganizationDomain("xe.xio.org");
+  QCoreApplication::setOrganizationDomain("org.xio.xeap");
 
   QApplication app(argc, argv);
   Xe::Window window;

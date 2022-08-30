@@ -29,6 +29,7 @@ public:
 
 public slots:
   void togglePlay();
+  void toggleShuffle();
   void stopPlayer();
   void nextTrack();
   void previousTrack();
@@ -44,12 +45,11 @@ private:
   QPushButton *plpauseBtn;
   QPushButton *prevBtn;
   QPushButton *stopBtn;
+  QPushButton * shuffleBtn;
   QSlider *slider;
   QVBoxLayout *mainLayout;
   Xe::PlaylistModel *model;
   qint64 m_pos;
-  QLabel *titleLabel;
-  QLabel *artistLabel;
   Media *_media;
 };
 
