@@ -5,13 +5,13 @@
 
 Xe::View::View(PlaylistModel *_model, QWidget *parent)
     : QWidget(parent), model(_model) {
-
   setMinimumSize(640, 280);
   layout = new QVBoxLayout();
   setLayout(layout);
 
-  setStyleSheet("QTableView {selection-background-color : "
-                "#414141;qproperty-showGrid : false; }");
+  setStyleSheet(
+      "QTableView {selection-background-color : "
+      "#414141;qproperty-showGrid : false; }");
 
   _tableView = new QTableView(this);
   _tableView->setModel(model);
@@ -30,6 +30,14 @@ Xe::View::View(PlaylistModel *_model, QWidget *parent)
   layout->addWidget(_tableView);
   QObject::connect(_tableView, &QTableView::doubleClicked, model,
                    &PlaylistModel::setCurrentIndex);
+  QObject::connect(model, &PlaylistModel::currentIndexChanged, this,
+                   &View::updateSelection);
 }
 
 void Xe::View::setPlaylistModel(Xe::PlaylistModel *_model) { model = _model; }
+
+void Xe::View::updateSelection(const QModelIndex &index) {
+  qDebug() << "updating selection for row " << index.row();
+  _tableView->selectionModel()->select(
+      index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+}

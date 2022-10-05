@@ -17,6 +17,7 @@ class View : public QWidget {
 public:
   View(PlaylistModel *_model, QWidget *parent = nullptr);
   void setPlaylistModel(Xe::PlaylistModel *_model);
+  void updateSelection(const QModelIndex&);
 
 private:
   QTableView *_tableView;

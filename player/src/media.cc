@@ -80,6 +80,7 @@ void Xe::Media::loadNext() {
   _player->play();
   setState(MediaState::Playing);
   emit playingChanged(get_base_filename(_player->source().toString()));
+  emit _model->currentIndexChanged(idx);
 }
 
 void Xe::Media::loadPrevious() {
@@ -91,6 +92,7 @@ void Xe::Media::loadPrevious() {
   _player->play();
   setState(MediaState::Playing);
   emit playingChanged(get_base_filename(_player->source().toString()));
+  emit _model->currentIndexChanged(idx);
 }
 
 void Xe::Media::setMediaFolder(const QString &path) {}
