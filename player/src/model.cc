@@ -1,5 +1,5 @@
 #include "model.h"
-#include "audioinfo.h"
+
 
 #include <QDir>
 #include <QDirIterator>
@@ -8,6 +8,7 @@ Xe::PlaylistModel::PlaylistModel(QAbstractListModel *parent)
     : QAbstractTableModel(parent) {
   folder = QDir::homePath().append("/Music");
   loadData(folder);
+  info = new AudioInfo();
 }
 
 void Xe::PlaylistModel::loadData(const QString &dir) {
@@ -34,7 +35,7 @@ int Xe::PlaylistModel::columnCount(const QModelIndex &parent) const {
 
 QVariant Xe::PlaylistModel::data(const QModelIndex &index, int role) const {
 
-  const auto item = audioItems[(index.row())];
+  auto item = audioItems[(index.row())];
   if (!index.isValid())
     return QVariant();
   if (index.row() >= audioItems.size() || index.row() < 0)
@@ -42,15 +43,15 @@ QVariant Xe::PlaylistModel::data(const QModelIndex &index, int role) const {
   if (role == Qt::DisplayRole) {
     switch (index.column()) {
     case 0:
-      return AudioInfo::getTitle(item);
-    case 1:
-      return AudioInfo::getArtist(item);
+      return (*info)(item)->getTitle();
+    case 1 :
+      return (*info)(item)->getArtist();
     default:
       break;
     }
   }
   if (role == FileRole) {
-    return AudioInfo::getFileName(item);
+    return (*info)(item)->getFileName();
   }
 
   return QVariant();

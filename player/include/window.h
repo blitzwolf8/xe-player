@@ -15,16 +15,17 @@ namespace Xe {
 class Window : public QWidget {
   Q_OBJECT
 
-public:
+ public:
   Window(QWidget *parent = nullptr);
+  void setTitle(const QString &);
 
-private:
+ private:
   QVBoxLayout *layout;
   Controls *_controls;
   View *_view;
   Media *_media;
 };
 
-} // namespace Xe
+}  // namespace Xe
 
-#endif // WINDOW_H
+#endif  // WINDOW_H

@@ -9,23 +9,29 @@
 namespace Xe {
 class AudioInfo {
 public:
-  static QString getTitle(const QString &src) {
-    auto str = src.toLocal8Bit().data();
-    auto _filename = TagLib::FileName(str);
-    auto ref = new TagLib::FileRef(_filename);
 
-    if (QString(ref->tag()->title().toCString()) == "")
-      return QFileInfo(src).fileName();
+  AudioInfo* operator()(const QString& filename) {
+    auto str = filename.toLocal8Bit().data();
+    _filename = TagLib::FileName(str);
+    ref = TagLib::FileRef(_filename);
+
+    return this;
+  }
+
+  QString getTitle() {
+    if (QString(ref.tag()->title().toCString()) == "")
+      return QFileInfo(_filename).fileName();
     else
-      return QString(ref->tag()->title().toCString());
+      return QString(ref.tag()->title().toCString());
   }
-  static QString getArtist(const QString &src) {
-    auto str = src.toLocal8Bit().data();
-    auto _filename = TagLib::FileName(str);
-    auto ref = new TagLib::FileRef(_filename);
-    return QString(ref->tag()->artist().toCString()).toUtf8();
+  QString getArtist() {
+    return QString(ref.tag()->artist().toCString()).toUtf8();
   }
-  static QString getFileName(const QString &src) { return src; }
+  QString getFileName() { return QString(_filename); }
+
+  private:
+    TagLib::FileRef ref;
+    const char* _filename;
 };
 
 } // namespace Xe

@@ -24,6 +24,7 @@ public:
 signals:
   void directoryChanged(const QString&);
   void mediaStateChanged(MediaState state);
+  void playingChanged(const QString&);
 
 public slots:
   void loadMedia();
@@ -44,6 +45,8 @@ private:
 };
 
 using MediaState = Media::MediaState;
+
+QString get_base_filename(const QString& filename);
 
 } // namespace Xe
 

@@ -1,6 +1,8 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+#include "audioinfo.h"
+
 #include <QAbstractTableModel>
 
 namespace Xe {
@@ -32,6 +34,7 @@ private:
   QStringList audioItems;
   QString folder;
   QModelIndex _currentIndex;
+  AudioInfo *info;
 };
 
 } // end namespace Xe

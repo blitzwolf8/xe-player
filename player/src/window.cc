@@ -1,11 +1,13 @@
 #include "window.h"
-#include "format.h"
-#include "model.h"
 
+#include <QCoreApplication>
 #include <QDir>
 #include <QDirIterator>
 
-Xe::Window::Window(QWidget *parent) : QWidget(parent) {
+#include "format.h"
+#include "model.h"
+
+Xe::Window::Window(QWidget* parent) : QWidget(parent) {
   layout = new QVBoxLayout();
   this->setLayout(layout);
   layout->setContentsMargins(0, 0, 0, 0);
@@ -17,4 +19,13 @@ Xe::Window::Window(QWidget *parent) : QWidget(parent) {
 
   layout->addWidget(_view);
   layout->addWidget(_controls);
+
+  QObject::connect(_media, &Media::playingChanged, this, &Window::setTitle);
+}
+
+void Xe::Window::setTitle(const QString& value) {
+  if (value.isEmpty())
+    setWindowTitle("XeAP");
+  else
+    this->setWindowTitle(value + " - " + QCoreApplication::applicationName());
 }

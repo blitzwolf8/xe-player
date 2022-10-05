@@ -3,6 +3,7 @@
 #include <QAudioOutput>
 #include <QDir>
 #include <QFileDialog>
+#include <QFileInfo>
 
 Xe::Media::Media(QObject *parent) : QObject(parent), _index(0) {
   defaultFolder = QDir::homePath().append("Music");
@@ -28,6 +29,7 @@ void Xe::Media::loadMedia() {
   auto id = _model->index(_index, 0);
   auto playing = _model->data(id, PlaylistModel::FileRole);
   _model->setCurrentIndex(id);
+  _index = id.row();
   _player->setSource(playing.toString());
   setState(MediaState::Stopped);
 }
@@ -51,6 +53,7 @@ void Xe::Media::stopPlayback() {
   if (_player->playbackState() != QMediaPlayer::StoppedState) {
     _player->stop();
     setState(MediaState::Stopped);
+    emit playingChanged("");
   }
 }
 
@@ -58,6 +61,7 @@ void Xe::Media::tooglePlayback() {
   if (_player->playbackState() != QMediaPlayer::PlayingState) {
     _player->play();
     setState(MediaState::Playing);
+    emit playingChanged(get_base_filename(_player->source().toString()));
   } else {
     _player->pause();
     setState(MediaState::Paused);
@@ -75,18 +79,18 @@ void Xe::Media::loadNext() {
   _player->setSource(_model->data(idx, PlaylistModel::FileRole).toUrl());
   _player->play();
   setState(MediaState::Playing);
+  emit playingChanged(get_base_filename(_player->source().toString()));
 }
 
 void Xe::Media::loadPrevious() {
-  _index -= 1;
-  if (_index < 0) {
-    _index = (_model->rowCount(QModelIndex()) - 1);
-  }
+  if(_index > 0)
+    _index -= 1;
 
   auto idx = _model->index(_index, 0);
   _player->setSource(_model->data(idx, PlaylistModel::FileRole).toUrl());
   _player->play();
   setState(MediaState::Playing);
+  emit playingChanged(get_base_filename(_player->source().toString()));
 }
 
 void Xe::Media::setMediaFolder(const QString &path) {}
@@ -103,7 +107,14 @@ void Xe::Media::status() {
 }
 
 void Xe::Media::updateIndex(const QModelIndex &index) {
+  _index = index.row();
   _player->setSource(_model->data(index, PlaylistModel::FileRole).toUrl());
   _player->play();
   setState(MediaState::Playing);
+  emit playingChanged(get_base_filename(_player->source().toString()));
+}
+
+QString Xe::get_base_filename(const QString &filename) {
+  QFileInfo info{filename};
+  return info.baseName();
 }
